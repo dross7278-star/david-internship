@@ -12177,6 +12177,79 @@ a.read_more i {
   top: -13px;
 }
 
+.home-carousel {
+  position: relative;
+  padding: 0 26px;
+}
+
+.home-carousel-window {
+  overflow: hidden;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.home-carousel-track {
+  display: flex;
+  gap: 16px;
+}
+
+.home-carousel-slide {
+  flex: 0 0 calc((100% - (var(--visible-count) - 1) * 16px) / var(--visible-count));
+}
+
+.home-carousel-arrow {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #111;
+}
+
+.home-carousel-arrow:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+.home-carousel-arrow-left {
+  left: -6px;
+}
+
+.home-carousel-arrow-right {
+  right: -6px;
+}
+
+.home-carousel-arrow i {
+  font-size: 24px;
+}
+
+@media only screen and (max-width: 767px) {
+  .home-carousel {
+    padding: 0 20px;
+  }
+
+  .home-carousel-arrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .home-carousel-arrow i {
+    font-size: 20px;
+  }
+
+  .home-carousel-arrow-left {
+    left: -2px;
+  }
+
+  .home-carousel-arrow-right {
+    right: -2px;
+  }
+}
+
 .owl-dots {
   text-align: center;
 }

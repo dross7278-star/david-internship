@@ -2,10 +2,14 @@ import React, { useEffect, useMemo, useState } from "react";
 import NftCard from "../UI/NftCard";
 import { buildExploreItems, fetchExploreItems } from "../../data/marketplaceApi";
 
-const ExploreItems = () => {
+const ExploreItems = ({ selectedCategory = "all", onCategoryChange }) => {
   const [sortOrder, setSortOrder] = useState("");
   const [visibleCount, setVisibleCount] = useState(8);
   const [apiItems, setApiItems] = useState([]);
+
+  useEffect(() => {
+    setVisibleCount(8);
+  }, [selectedCategory]);
 
   useEffect(() => {
     let isMounted = true;
@@ -34,12 +38,41 @@ const ExploreItems = () => {
     () => buildExploreItems(apiItems, sortOrder),
     [apiItems, sortOrder]
   );
-  const visibleItems = sortedItems.slice(0, visibleCount);
-  const hasMoreItems = visibleCount < sortedItems.length;
+
+  const filteredItems = useMemo(() => {
+    if (!selectedCategory || selectedCategory === "all") {
+      return sortedItems;
+    }
+
+    return sortedItems.filter((item) => {
+      const itemCategory = String(item.category || "art").toLowerCase();
+      return itemCategory === selectedCategory;
+    });
+  }, [selectedCategory, sortedItems]);
+
+  const visibleItems = filteredItems.slice(0, visibleCount);
+  const hasMoreItems = visibleCount < filteredItems.length;
 
   return (
     <>
-      <div>
+      <div className="col-lg-12 d-flex flex-wrap gap-2 mb-4">
+        <select
+          id="filter-category"
+          value={selectedCategory}
+          onChange={(event) => {
+            if (typeof onCategoryChange === "function") {
+              onCategoryChange(event.target.value);
+            }
+          }}
+        >
+          <option value="all">All categories</option>
+          <option value="art">Art</option>
+          <option value="music">Music</option>
+          <option value="domain-names">Domain Names</option>
+          <option value="virtual-worlds">Virtual Worlds</option>
+          <option value="trading-cards">Trading Cards</option>
+          <option value="collectibles">Collectibles</option>
+        </select>
         <select
           id="filter-items"
           value={sortOrder}

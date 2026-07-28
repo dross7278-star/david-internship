@@ -18,6 +18,7 @@ const formatCountdown = (expiryDate) => {
 
 const NftCard = ({ item }) => {
   const author = findAuthorById(item.ownerId);
+  const creatorName = item.authorName || author.name;
   const [countdownLabel, setCountdownLabel] = useState(
     item.expiryDate ? formatCountdown(item.expiryDate) : item.countdown || ""
   );
@@ -51,9 +52,9 @@ const NftCard = ({ item }) => {
           to={`/author/${author.id}`}
           data-bs-toggle="tooltip"
           data-bs-placement="top"
-          title={`Creator: ${author.name}`}
+          title={`Creator: ${creatorName}`}
         >
-          <img className="lazy" src={cardAuthorImage} alt={author.name} />
+          <img className="lazy" src={cardAuthorImage} alt={creatorName} />
           <i className="fa fa-check"></i>
         </Link>
       </div>

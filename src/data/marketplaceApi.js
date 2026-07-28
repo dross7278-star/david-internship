@@ -22,6 +22,10 @@ const ITEM_DETAILS_ENDPOINT =
 
 const cleanTitle = (value) => String(value || "Untitled").replace(/\s+/g, " ").trim();
 const cleanName = (value) => String(value || "Unknown Creator").replace(/\s+/g, " ").trim();
+const cleanCategory = (value) =>
+  String(value || "art")
+    .toLowerCase()
+    .trim();
 
 const getDefaultSerialNumber = (nftId) => {
   const parsed = Number(nftId);
@@ -46,7 +50,9 @@ const normalizeNewItem = (rawItem) => {
     views: Number(seedItem?.views ?? 100),
     ownerId,
     creatorId: seedItem?.creatorId || ownerId,
+    authorName: cleanName(rawItem?.authorName || rawItem?.creatorName),
     image: rawItem?.nftImage || seedItem?.image || NftImage,
+    category: cleanCategory(rawItem?.category || rawItem?.nftCategory || seedItem?.category),
     authorImage: rawItem?.authorImage || undefined,
     expiryDate:
       typeof rawItem?.expiryDate === "number" && Number.isFinite(rawItem.expiryDate)
