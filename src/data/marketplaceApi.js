@@ -244,7 +244,7 @@ export const fetchItemDetails = async (itemId) => {
 
 export const buildExploreItems = (apiItems, sortOrder) => {
   if (Array.isArray(apiItems) && apiItems.length > 0) {
-    return sortItems(byUniqueItemId([...apiItems, ...getAllItems()]), sortOrder);
+    return sortItems(byUniqueItemId([...getAllItems(), ...apiItems]), sortOrder);
   }
 
   return sortItems(getAllItems(), sortOrder);
