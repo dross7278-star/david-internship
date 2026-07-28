@@ -4,12 +4,14 @@ import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { findAuthorById, findItemById } from "../data/marketplaceData";
 import { fetchAuthorProfile, fetchItemDetails } from "../data/marketplaceApi";
+import Skeleton from "../components/UI/Skeleton";
 
 const ItemDetails = () => {
   const { itemId } = useParams();
   const [apiItem, setApiItem] = useState(null);
   const [ownerProfile, setOwnerProfile] = useState(null);
   const [creatorProfile, setCreatorProfile] = useState(null);
+  const [isItemLoading, setIsItemLoading] = useState(true);
   const item = useMemo(() => apiItem || findItemById(itemId), [apiItem, itemId]);
   const owner = {
     ...findAuthorById(item.ownerId),
@@ -24,6 +26,8 @@ const ItemDetails = () => {
     let isMounted = true;
 
     const loadItem = async () => {
+      setIsItemLoading(true);
+
       try {
         const loadedItem = await fetchItemDetails(itemId);
         if (isMounted) {
@@ -32,6 +36,10 @@ const ItemDetails = () => {
       } catch (error) {
         if (isMounted) {
           setApiItem(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsItemLoading(false);
         }
       }
     };
@@ -86,39 +94,66 @@ const ItemDetails = () => {
           <div className="container">
             <div className="row">
               <div className="col-md-6 text-center">
-                <img
-                  src={item.image}
-                  className="img-fluid img-rounded mb-sm-30 nft-image"
-                  alt={item.title}
-                />
+                {isItemLoading ? (
+                  <Skeleton width="100%" height="500px" borderRadius="12px" />
+                ) : (
+                  <img
+                    src={item.image}
+                    className="img-fluid img-rounded mb-sm-30 nft-image"
+                    alt={item.title}
+                  />
+                )}
               </div>
               <div className="col-md-6">
                 <div className="item_info">
-                  <h2>{`${item.title} #${item.serialNumber}`}</h2>
+                  {isItemLoading ? (
+                    <>
+                      <Skeleton width="72%" height="48px" borderRadius="10px" />
+                      <div className="spacer-10"></div>
+                    </>
+                  ) : (
+                    <h2>{`${item.title} #${item.serialNumber}`}</h2>
+                  )}
 
                   <div className="item_info_counts">
                     <div className="item_info_views">
                       <i className="fa fa-eye"></i>
-                      {item.views}
+                      {isItemLoading ? "..." : item.views}
                     </div>
                     <div className="item_info_like">
                       <i className="fa fa-heart"></i>
-                      {item.likes}
+                      {isItemLoading ? "..." : item.likes}
                     </div>
                   </div>
-                  <p>{item.description}</p>
+                  {isItemLoading ? (
+                    <>
+                      <Skeleton width="100%" height="18px" borderRadius="8px" />
+                      <Skeleton width="96%" height="18px" borderRadius="8px" />
+                      <Skeleton width="84%" height="18px" borderRadius="8px" />
+                    </>
+                  ) : (
+                    <p>{item.description}</p>
+                  )}
                   <div className="d-flex flex-row">
                     <div className="mr40">
                       <h6>Owner</h6>
                       <div className="item_author">
                         <div className="author_list_pp">
-                          <Link to={`/author/${owner.id}`}>
-                            <img className="lazy" src={ownerImage} alt={owner.name} />
-                            <i className="fa fa-check"></i>
-                          </Link>
+                          {isItemLoading ? (
+                            <Skeleton width="50px" height="50px" borderRadius="50%" />
+                          ) : (
+                            <Link to={`/author/${owner.id}`}>
+                              <img className="lazy" src={ownerImage} alt={owner.name} />
+                              <i className="fa fa-check"></i>
+                            </Link>
+                          )}
                         </div>
                         <div className="author_list_info">
-                          <Link to={`/author/${owner.id}`}>{owner.name}</Link>
+                          {isItemLoading ? (
+                            <Skeleton width="140px" height="22px" borderRadius="8px" />
+                          ) : (
+                            <Link to={`/author/${owner.id}`}>{owner.name}</Link>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -129,21 +164,35 @@ const ItemDetails = () => {
                       <h6>Creator</h6>
                       <div className="item_author">
                         <div className="author_list_pp">
-                          <Link to={`/author/${creator.id}`}>
-                            <img className="lazy" src={creator.image} alt={creator.name} />
-                            <i className="fa fa-check"></i>
-                          </Link>
+                          {isItemLoading ? (
+                            <Skeleton width="50px" height="50px" borderRadius="50%" />
+                          ) : (
+                            <Link to={`/author/${creator.id}`}>
+                              <img className="lazy" src={creator.image} alt={creator.name} />
+                              <i className="fa fa-check"></i>
+                            </Link>
+                          )}
                         </div>
                         <div className="author_list_info">
-                          <Link to={`/author/${creator.id}`}>{creator.name}</Link>
+                          {isItemLoading ? (
+                            <Skeleton width="140px" height="22px" borderRadius="8px" />
+                          ) : (
+                            <Link to={`/author/${creator.id}`}>{creator.name}</Link>
+                          )}
                         </div>
                       </div>
                     </div>
                     <div className="spacer-40"></div>
                     <h6>Price</h6>
                     <div className="nft-item-price">
-                      <img src={EthImage} alt="" />
-                      <span>{Number(item.price).toFixed(2)}</span>
+                      {isItemLoading ? (
+                        <Skeleton width="120px" height="30px" borderRadius="8px" />
+                      ) : (
+                        <>
+                          <img src={EthImage} alt="" />
+                          <span>{Number(item.price).toFixed(2)}</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

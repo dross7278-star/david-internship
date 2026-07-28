@@ -4,16 +4,20 @@ import AuthorItems from "../components/author/AuthorItems";
 import { Link, useParams } from "react-router-dom";
 import { findAuthorById, getItemsForAuthor } from "../data/marketplaceData";
 import { fetchAuthorProfile } from "../data/marketplaceApi";
+import Skeleton from "../components/UI/Skeleton";
 
 const Author = () => {
   const { authorId } = useParams();
   const fallbackAuthor = findAuthorById(authorId);
   const [authorProfile, setAuthorProfile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
 
     const loadAuthorData = async () => {
+      setIsLoading(true);
+
       try {
         const loadedProfile = await fetchAuthorProfile(authorId);
         if (isMounted) {
@@ -22,6 +26,10 @@ const Author = () => {
       } catch (error) {
         if (isMounted) {
           setAuthorProfile(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
         }
       }
     };
@@ -78,29 +86,59 @@ const Author = () => {
                 <div className="d_profile de-flex">
                   <div className="de-flex-col">
                     <div className="profile_avatar">
-                      <img src={profileImage} alt={author.name} />
-
-                      <i className="fa fa-check"></i>
+                      {isLoading ? (
+                        <Skeleton width="150px" height="150px" borderRadius="50%" />
+                      ) : (
+                        <>
+                          <img src={profileImage} alt={author.name} />
+                          <i className="fa fa-check"></i>
+                        </>
+                      )}
                       <div className="profile_name">
                         <h4>
-                          {author.name}
-                          <span className="profile_username">{author.username}</span>
-                          <span id="wallet" className="profile_wallet">
-                            {author.wallet}
-                          </span>
-                          <button id="btn_copy" title="Copy Text" type="button" onClick={handleCopy}>
-                            Copy
-                          </button>
+                          {isLoading ? (
+                            <>
+                              <Skeleton width="200px" height="32px" borderRadius="8px" />
+                              <Skeleton width="130px" height="20px" borderRadius="8px" />
+                              <Skeleton width="360px" height="20px" borderRadius="8px" />
+                              <Skeleton width="64px" height="34px" borderRadius="6px" />
+                            </>
+                          ) : (
+                            <>
+                              {author.name}
+                              <span className="profile_username">{author.username}</span>
+                              <span id="wallet" className="profile_wallet">
+                                {author.wallet}
+                              </span>
+                              <button
+                                id="btn_copy"
+                                title="Copy Text"
+                                type="button"
+                                onClick={handleCopy}
+                              >
+                                Copy
+                              </button>
+                            </>
+                          )}
                         </h4>
                       </div>
                     </div>
                   </div>
                   <div className="profile_follow de-flex">
                     <div className="de-flex-col">
-                      <div className="profile_follower">{author.followers} followers</div>
-                      <Link to={`/author/${author.id}`} className="btn-main">
-                        Follow
-                      </Link>
+                      {isLoading ? (
+                        <>
+                          <Skeleton width="140px" height="24px" borderRadius="8px" />
+                          <Skeleton width="88px" height="42px" borderRadius="8px" />
+                        </>
+                      ) : (
+                        <>
+                          <div className="profile_follower">{author.followers} followers</div>
+                          <Link to={`/author/${author.id}`} className="btn-main">
+                            Follow
+                          </Link>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -108,7 +146,7 @@ const Author = () => {
 
               <div className="col-md-12">
                 <div className="de_tab tab_simple">
-                  <AuthorItems items={authorItems} />
+                  <AuthorItems items={authorItems} isLoading={isLoading} />
                 </div>
               </div>
             </div>

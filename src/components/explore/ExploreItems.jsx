@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import NftCard from "../UI/NftCard";
 import { buildExploreItems, fetchExploreItems } from "../../data/marketplaceApi";
+import Skeleton from "../UI/Skeleton";
 
 const ExploreItems = ({ selectedCategory = "all", onCategoryChange }) => {
   const [sortOrder, setSortOrder] = useState("");
   const [visibleCount, setVisibleCount] = useState(8);
   const [apiItems, setApiItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setVisibleCount(8);
@@ -15,6 +17,8 @@ const ExploreItems = ({ selectedCategory = "all", onCategoryChange }) => {
     let isMounted = true;
 
     const loadExploreItems = async () => {
+      setIsLoading(true);
+
       try {
         const loadedItems = await fetchExploreItems(sortOrder);
         if (isMounted) {
@@ -23,6 +27,10 @@ const ExploreItems = ({ selectedCategory = "all", onCategoryChange }) => {
       } catch (error) {
         if (isMounted) {
           setApiItems([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
         }
       }
     };
@@ -87,17 +95,38 @@ const ExploreItems = ({ selectedCategory = "all", onCategoryChange }) => {
           <option value="likes_high_to_low">Most liked</option>
         </select>
       </div>
-      {visibleItems.map((item) => (
-        <div
-          key={item.id}
-          className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12"
-          data-aos="fade-up"
-          style={{ display: "block", backgroundSize: "cover" }}
-        >
-          <NftCard item={item} />
-        </div>
-      ))}
-      {hasMoreItems ? (
+      {isLoading
+        ? new Array(visibleCount).fill(0).map((_, index) => (
+            <div
+              key={`explore-skeleton-${index}`}
+              className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12"
+              style={{ display: "block", backgroundSize: "cover" }}
+            >
+              <div className="nft__item">
+                <div className="author_list_pp">
+                  <Skeleton width="50px" height="50px" borderRadius="50%" />
+                </div>
+                <div className="nft__item_wrap">
+                  <Skeleton width="100%" height="220px" borderRadius="10px" />
+                </div>
+                <div className="nft__item_info">
+                  <Skeleton width="68%" height="28px" borderRadius="8px" />
+                  <Skeleton width="44%" height="20px" borderRadius="8px" />
+                </div>
+              </div>
+            </div>
+          ))
+        : visibleItems.map((item) => (
+            <div
+              key={item.id}
+              className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12"
+              data-aos="fade-up"
+              style={{ display: "block", backgroundSize: "cover" }}
+            >
+              <NftCard item={item} />
+            </div>
+          ))}
+      {!isLoading && hasMoreItems ? (
         <div className="col-md-12 text-center">
           <button
             type="button"
