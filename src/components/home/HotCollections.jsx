@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import AuthorImage from "../../images/author_thumbnail.jpg";
 import nftImage from "../../images/nftImage.jpg";
 import { fetchHotCollections } from "../../data/marketplaceApi";
+import Skeleton from "../UI/Skeleton";
 
 const getVisibleCardCount = () => {
   if (window.innerWidth < 768) {
@@ -171,33 +172,48 @@ const HotCollections = () => {
                 <div className="home-carousel-track">
                   {slidesToShow.map((item, index) => (
                     <div className="home-carousel-slide" key={isLoading ? `loading-${index}` : item.id}>
-                      <div className="nft_coll">
-                        <div className="nft_wrap">
-                          <Link to={isLoading ? "/item-details" : `/item-details/${item.id}`}>
-                            <img
-                              src={isLoading ? nftImage : item.nftImage || nftImage}
-                              className="lazy img-fluid"
-                              alt={isLoading ? "Loading collection" : item.title || "Collection"}
-                            />
-                          </Link>
+                      {isLoading ? (
+                        <div className="nft_coll">
+                          <div className="nft_wrap">
+                            <Skeleton width="100%" height="180px" borderRadius="10px" />
+                          </div>
+                          <div className="nft_coll_pp">
+                            <Skeleton width="55px" height="55px" borderRadius="50%" />
+                          </div>
+                          <div className="nft_coll_info">
+                            <Skeleton width="72%" height="28px" borderRadius="8px" />
+                            <Skeleton width="38%" height="18px" borderRadius="8px" />
+                          </div>
                         </div>
-                        <div className="nft_coll_pp">
-                          <Link to={isLoading ? "/author" : `/author/${item.ownerId}`}>
-                            <img
-                              className="lazy pp-coll"
-                              src={isLoading ? AuthorImage : item.authorImage || AuthorImage}
-                              alt={isLoading ? "Loading author" : item.title || "Author"}
-                            />
-                          </Link>
-                          <i className="fa fa-check"></i>
+                      ) : (
+                        <div className="nft_coll">
+                          <div className="nft_wrap">
+                            <Link to={`/item-details/${item.id}`}>
+                              <img
+                                src={item.nftImage || nftImage}
+                                className="lazy img-fluid"
+                                alt={item.title || "Collection"}
+                              />
+                            </Link>
+                          </div>
+                          <div className="nft_coll_pp">
+                            <Link to={`/author/${item.ownerId}`}>
+                              <img
+                                className="lazy pp-coll"
+                                src={item.authorImage || AuthorImage}
+                                alt={item.title || "Author"}
+                              />
+                            </Link>
+                            <i className="fa fa-check"></i>
+                          </div>
+                          <div className="nft_coll_info">
+                            <Link to={`/item-details/${item.id}`}>
+                              <h4>{item.title || "Untitled Collection"}</h4>
+                            </Link>
+                            <span>{`ERC-${item.code ?? "N/A"}`}</span>
+                          </div>
                         </div>
-                        <div className="nft_coll_info">
-                          <Link to={isLoading ? "/explore" : `/item-details/${item.id}`}>
-                            <h4>{isLoading ? "Loading..." : item.title || "Untitled Collection"}</h4>
-                          </Link>
-                          <span>{isLoading ? "" : `ERC-${item.code ?? "N/A"}`}</span>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   ))}
                 </div>

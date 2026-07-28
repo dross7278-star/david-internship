@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import NftCard from "../UI/NftCard";
 import { items } from "../../data/marketplaceData";
 import { fetchNewItems } from "../../data/marketplaceApi";
+import Skeleton from "../UI/Skeleton";
 
 const getVisibleCardCount = () => {
   if (window.innerWidth < 768) {
@@ -69,21 +70,19 @@ const NewItems = () => {
   }, []);
 
   const newestItems = useMemo(() => {
-    if (isLoading) {
-      return new Array(3).fill(0).map((_, index) => ({
-        ...items[index % items.length],
-        id: `loading-${index}`,
-      }));
-    }
-
     if (apiItems.length > 0) {
       return apiItems;
     }
 
     return items;
-  }, [apiItems, isLoading]);
+  }, [apiItems]);
 
-  const canSlide = newestItems.length > visibleCount;
+  const loadingSlides = useMemo(
+    () => new Array(Math.max(visibleCount, 3)).fill(0).map((_, index) => index),
+    [visibleCount]
+  );
+
+  const canSlide = !isLoading && newestItems.length > visibleCount;
   const slidesToShow = canSlide
     ? new Array(visibleCount).fill(null).map((_, index) => {
         const itemIndex = (startIndex + index) % newestItems.length;
@@ -182,11 +181,28 @@ const NewItems = () => {
                 }}
               >
                 <div className="home-carousel-track">
-                  {slidesToShow.map((item, index) => (
-                    <div className="home-carousel-slide" key={`${item.id}-${index}`}>
-                      <NftCard item={item} />
-                    </div>
-                  ))}
+                  {isLoading
+                    ? loadingSlides.slice(0, visibleCount).map((index) => (
+                        <div className="home-carousel-slide" key={`new-item-skeleton-${index}`}>
+                          <div className="nft__item">
+                            <div className="author_list_pp">
+                              <Skeleton width="50px" height="50px" borderRadius="50%" />
+                            </div>
+                            <div className="nft__item_wrap">
+                              <Skeleton width="100%" height="220px" borderRadius="10px" />
+                            </div>
+                            <div className="nft__item_info">
+                              <Skeleton width="66%" height="28px" borderRadius="8px" />
+                              <Skeleton width="40%" height="22px" borderRadius="8px" />
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    : slidesToShow.map((item, index) => (
+                        <div className="home-carousel-slide" key={`${item.id}-${index}`}>
+                          <NftCard item={item} />
+                        </div>
+                      ))}
                 </div>
               </div>
               <button
