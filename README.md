@@ -65,19 +65,13 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/a
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
-## GitHub Pages Deployment
+## Vercel Deployment
 
-This project is configured to deploy to:
+This project is deployed to:
 
-- https://dross7278-star.github.io/david-internship
+- https://david-internship-eta.vercel.app/
 
-Use these commands:
-
-### `npm run deploy`
-
-Builds the app and publishes the `build` folder to the `gh-pages` branch.
-
-If this is your first deployment, ensure GitHub Pages is enabled in repository settings and set the source branch to `gh-pages`.
+Vercel builds the app from source using `vercel.json` (`npm run build`, output directory `build`). All routes are rewritten to `index.html` so React Router deep links (e.g. `/explore`, `/author/:authorId`) work on refresh. Build output is not committed to the repository.
 
 ### `npm run build` fails to minify
 
