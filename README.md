@@ -79,6 +79,25 @@ Builds the app and publishes the `build` folder to the `gh-pages` branch.
 
 If this is your first deployment, ensure GitHub Pages is enabled in repository settings and set the source branch to `gh-pages`.
 
+## Vercel Deployment
+
+The `homepage` in `package.json` makes Create React App prefix every asset URL and the router `basename` with `/david-internship` for GitHub Pages. Vercel serves the app from `/`, so `vercel.json` overrides this for Vercel builds only:
+
+- **Framework:** `create-react-app`
+- **Install command:** `npm ci`
+- **Build command:** `PUBLIC_URL=/ npm run build` (overrides `homepage`, so assets load from `/static/...` and the router basename is the site root)
+- **Output directory:** `build` (built from `src/` and `public/`; the compiled files committed at the repo root for GitHub Pages are not used)
+- **Rewrites:** all paths except `/static/*` fall back to `/index.html`, so deep links such as `/explore` or `/author/:authorId` work on refresh. Existing files are served first, and missing `/static/*` files return 404.
+
+In the Vercel dashboard:
+
+1. Import this GitHub repository with the Git integration and set **Root Directory** to the repository root (leave it empty).
+2. Under **Settings → Build and Deployment**, turn off any Framework, Build Command, Output Directory, or Install Command overrides so `vercel.json` is used. Any override you keep must match the values above.
+3. Make sure the production domain (for example `david-internship-eta.vercel.app`) is assigned to this project under **Settings → Domains**.
+4. Redeploy production after merging this config, either by pushing to the production branch or with **Redeploy** on the latest deployment, with the build cache cleared.
+
+You can check a Vercel-style build locally with `PUBLIC_URL=/ npm run build`. `build/index.html` should then reference `/static/...` and not `/david-internship/static/...`.
+
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
